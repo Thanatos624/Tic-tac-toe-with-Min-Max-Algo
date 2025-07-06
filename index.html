@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Fix these paths if files are in subfolders -->
+<link rel="stylesheet" href="style.css">
+<script src="script.js" defer></script>
+<head>
+    <!-- SEO Meta Tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unbeatable Tic-Tac-Toe AI | Minimax Algorithm Demo</title>
+    <meta name="description" content="Play Tic-Tac-Toe against an AI using Minimax and Alpha-Beta pruning. Learn how the algorithm works!">
+    <meta name="keywords" content="Tic-Tac-Toe AI, Minimax Algorithm, Alpha-Beta Pruning, DSA Project">
+    
+    <!-- Open Graph (for social sharing) -->
+    <meta property="og:title" content="Unbeatable Tic-Tac-Toe AI">
+    <meta property="og:description" content="A JavaScript demo of Minimax algorithm in Tic-Tac-Toe">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://your-url.com">
+    <meta property="og:image" content="https://your-url.com/preview.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.ico">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Tic-Tac-Toe AI: Unbeatable Minimax Algorithm</h1>
+        <p>A project demonstrating how the Minimax algorithm with Alpha-Beta pruning works.</p>
+    </header>
+    
+    <main>
+        <div class="board" id="board">
+            <!-- Cells will be added via JavaScript -->
+        </div>
+        <button id="reset">Reset Game</button>
+    </main>
+    
+    <section class="explanation">
+        <h2>How the AI Works</h2>
+        <p>This AI uses the <strong>Minimax algorithm</strong> with <strong>Alpha-Beta pruning</strong> to never lose.</p>
+        <ul>
+            <li>🤖 <strong>Minimax</strong>: Simulates all possible moves.</li>
+            <li>✂️ <strong>Alpha-Beta</strong>: Optimizes by skipping bad branches.</li>
+        </ul>
+    </section>
+    
+    <footer>
+        <p>Built with JavaScript by Mainak Saha | <a href="https://github.com/Thanatos624">GitHub</a></p>
+    </footer>
+    
+    <script>
+        // Initialize the board
+        const board = Array(9).fill(null);
+        let cells = [];
+        const boardElement = document.getElementById('board');
+        const resetButton = document.getElementById('reset');
+
+        // Create cells dynamically
+        function createBoard() {
+            boardElement.innerHTML = '';
+            cells = [];
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.dataset.index = i;
+                cell.addEventListener('click', () => handleMove(i));
+                boardElement.appendChild(cell);
+                cells.push(cell);
+            }
+        }
+
+        // Handle player move
+        function handleMove(index) {
+            if (board[index] || checkWinner(board)) return;
+            
+            board[index] = 'X';
+            cells[index].textContent = 'X';
+            
+            if (!checkWinner(board)) {
+                const aiMove = bestMove();
+                if (aiMove !== undefined) {
+                    board[aiMove] = 'O';
+                    cells[aiMove].textContent = 'O';
+                    checkWinner(board);
+                }
+            }
+        }
+
+        // Minimax + Alpha-Beta
+        function minimax(board, depth, isMaximizing, alpha = -Infinity, beta = Infinity) {
+            const winner = checkWinner(board);
+            if (winner !== null) {
+                return winner === 'X' ? -10 + depth : winner === 'O' ? 10 - depth : 0;
+            }
+
+            if (isMaximizing) {
+                let bestScore = -Infinity;
+                for (let i = 0; i < 9; i++) {
+                    if (!board[i]) {
+                        board[i] = 'O';
+                        const score = minimax(board, depth + 1, false, alpha, beta);
+                        board[i] = null;
+                        bestScore = Math.max(score, bestScore);
+                        alpha = Math.max(alpha, bestScore);
+                        if (beta <= alpha) break;
+                    }
+                }
+                return bestScore;
+            } else {
+                let bestScore = Infinity;
+                for (let i = 0; i < 9; i++) {
+                    if (!board[i]) {
+                        board[i] = 'X';
+                        const score = minimax(board, depth + 1, true, alpha, beta);
+                        board[i] = null;
+                        bestScore = Math.min(score, bestScore);
+                        beta = Math.min(beta, bestScore);
+                        if (beta <= alpha) break;
+                    }
+                }
+                return bestScore;
+            }
+        }
+
+        // AI makes the best move
+        function bestMove() {
+            let bestScore = -Infinity;
+            let move;
+            for (let i = 0; i < 9; i++) {
+                if (!board[i]) {
+                    board[i] = 'O';
+                    const score = minimax(board, 0, false);
+                    board[i] = null;
+                    if (score > bestScore) {
+                        bestScore = score;
+                        move = i;
+                    }
+                }
+            }
+            return move;
+        }
+
+        // Check for winner
+        function checkWinner(board) {
+            const winPatterns = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+                [0, 4, 8], [2, 4, 6]             // Diagonals
+            ];
+            
+            for (const pattern of winPatterns) {
+                const [a, b, c] = pattern;
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    return board[a];
+                }
+            }
+            
+            return board.includes(null) ? null : 'Draw';
+        }
+
+        // Reset game
+        resetButton.addEventListener('click', () => {
+            board.fill(null);
+            cells.forEach(cell => cell.textContent = '');
+        });
+
+        // Initialize the game
+        createBoard();
+    </script>
+</body>
+</html>
