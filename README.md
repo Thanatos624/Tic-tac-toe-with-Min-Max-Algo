@@ -8,7 +8,7 @@ A JavaScript implementation of Tic-Tac-Toe using the **Minimax algorithm with Al
 - 📱 Mobile-friendly design
 
 ## Try It Live
-[Play Here](https://your-username.github.io/tic-tac-toe-ai/)
+[Play Here](https://thanatos624.github.io/Tic-tac-toe-with-Min-Max-Algo/)
 
 ## How It Works
 The AI evaluates all possible moves using a **game tree** and chooses the optimal path.
